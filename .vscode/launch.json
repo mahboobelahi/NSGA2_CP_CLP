@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Django",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/packaging/backend/deliveryoptimizer/manage.py",
+
+            "args": [
+                "runserver",
+                "--noreload",
+                // "localhost:3031"
+            ],
+            "django": true,
+            "justMyCode": true,
+            "console": "integratedTerminal"
+        }
+    ]
+}
