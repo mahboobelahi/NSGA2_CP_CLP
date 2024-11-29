@@ -1,0 +1,14 @@
+
+packaging/backend/deliveryoptimizer/cargo_storageOpt/CLP_GA/Reports
+packaging/backend/deliveryoptimizer/cargo_storageOpt/CLP_GA/DataSets
+packaging/backend/deliveryoptimizer/cargo_storageOpt/__Pycache__
+packaging/backend/deliveryoptimizer/cargo_storageOpt/CLP_GA/__Pycache__
+packaging/backend/deliveryoptimizer/deliveryoptimizer/__pycache__
+packaging/frontend/node_modules
+packaging/backend/deliveryoptimizer/db.sqlite3
+packaging/backend/deliveryoptimizer/packaging/migrations/
+packaging/backend/deliveryoptimizer/cargo_storageOpt/migrations
+*.pyc
+
+*.code-workspace
+env/
