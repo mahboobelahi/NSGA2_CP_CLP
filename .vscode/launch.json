@@ -6,7 +6,7 @@
             "name": "Django",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/packaging/backend/deliveryoptimizer/manage.py",
+            "program": "${workspaceFolder}/deliveryoptimizer/manage.py",
 
             "args": [
                 "runserver",

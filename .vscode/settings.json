@@ -18,5 +18,16 @@
         "titleBar.inactiveBackground": "#1857a499",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.color": "#1857a4"
+    "peacock.color": "#1857a4",
+//   "terminal.integrated.profiles.windows": {
+//             "PowerShell (Custom)": {
+//                 "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+//                 "args": [
+//                     "-NoExit",
+//                     "-Command",
+//                     "& { function Prompt { \"$([char]27)[32m(env) $([char]27)[34m$(Split-Path -Leaf (Get-Location)) $([char]27)[35m$(Get-Date -Format 'HH:mm:ss') $([char]27)[33m$(git rev-parse --abbrev-ref HEAD 2>$null) $([char]27)[0m> \" } }"
+//                 ]
+//             }
+//         },
+//         "terminal.integrated.defaultProfile.windows": "PowerShell (Custom)"
 }
