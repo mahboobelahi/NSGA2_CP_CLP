@@ -40,15 +40,15 @@ class Item:
 
         return{
             "partno":self.partno,"name":self.name,"stackable":self.stackable,"orderPriority":self.orderPriority,
-            "effect_dim":self.get_dimention(),"rotation_type":self.rotation_type,"S_rotation":self.s_rotate
+            "effect_dim":self.get_dimension(),"rotation_type":self.rotation_type,"S_rotation":self.s_rotate
             # "length":self.length,'width':self.width,
-            # "height":self.height,"effect_dim":self.get_dimention()
+            # "height":self.height,"effect_dim":self.get_dimension()
         }
     def get_LWH_R(self):
         return [self.length,self.width,self.height,self.rotation_type]
     
     def item_passport(self):
-        return f"{self.get_id()},{self.get_LWH_R()},{self.get_dimention()},{self.get_volume()}"
+        return f"{self.get_id()},{self.get_LWH_R()},{self.get_dimension()},{self.get_volume()}"
 
     def get_dimension(self):
         rotation_map = {
@@ -74,7 +74,7 @@ class Item:
         return self.partno+self.name
     
     def get_plot_data(self):
-        data = self.position+self.get_dimention()
+        data = self.position+self.get_dimension()
         data.append(int(self.name.split("C-")[1]))
         data.append(self.partno)
         return data

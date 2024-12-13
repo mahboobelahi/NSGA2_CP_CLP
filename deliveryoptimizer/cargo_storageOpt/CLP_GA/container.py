@@ -40,5 +40,5 @@ class Container:
             total_value += item.value
         return round(total_value, 2)
     
-    def get_dimention(self):
+    def get_dimension(self):
         return [self.length, self.width, self.height]
