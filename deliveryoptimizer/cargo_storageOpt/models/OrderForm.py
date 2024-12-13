@@ -47,7 +47,7 @@ class FormData(models.Model):
             'boxTag': self.boxTag,
             'stackable': self.stackable,
             'additional_information': self.additional_information,
-            'timestamp': self.formatted_timestamp(self.timestamp),
+            'system_time': self.formatted_timestamp(self.system_time),
             'order_delivery_time': self.formatted_timestamp(self.order_delivery_time),
             'order_receive_time' : self.formatted_timestamp(self.order_receive_time),
             'order_fetched': self.order_fetched,

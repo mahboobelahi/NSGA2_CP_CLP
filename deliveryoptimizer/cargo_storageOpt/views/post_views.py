@@ -9,14 +9,78 @@ from ..models.OrderForm import FormData
 from ..models.GAComputationResults import GAResult
 from ..serializers.serializers import FormDataSerializer
 from ..CLP_GA.main import main
-import threading
+import threading,json
+from django.views.decorators.csrf import csrf_exempt
 from pprint import pprint
-from ..CLP_GA.configurations import config_dict
+
+
+@api_view(['POST'])
+def add_containers(request):
+    try:
+        # Parse the JSON body
+        data = json.loads(request.body)
+
+        # Check if the input is a list
+        if not isinstance(data, list):
+            return JsonResponse({'error': 'Expected a list of containers'}, status=400)
+
+        # Validate and create containers
+        required_fields = [
+            'opening_type', 'cont_ID', 'sort_id', 'tare_weight', 'payload',
+            'external_length', 'external_width', 'external_height',
+            'internal_length', 'internal_width', 'internal_height'
+        ]
+
+        containers = []
+        errors = []
+
+        for idx, container_data in enumerate(data):
+            missing_fields = [field for field in required_fields if field not in container_data]
+            if missing_fields:
+                errors.append({
+                    'index': idx,
+                    'error': f'Missing fields: {", ".join(missing_fields)}'
+                })
+                continue
+
+            try:
+                # Create a container object
+                container = Container(
+                    opening_type=container_data['opening_type'],
+                    cont_ID=container_data['cont_ID'],
+                    sort_id=container_data['sort_id'],
+                    tare_weight=container_data['tare_weight'],
+                    payload=container_data['payload'],
+                    external_length=container_data['external_length'],
+                    external_width=container_data['external_width'],
+                    external_height=container_data['external_height'],
+                    internal_length=container_data['internal_length'],
+                    internal_width=container_data['internal_width'],
+                    internal_height=container_data['internal_height']
+                )
+                containers.append(container)
+            except Exception as e:
+                errors.append({'index': idx, 'error': str(e)})
+
+        # Bulk create containers
+        if containers:
+            Container.objects.bulk_create(containers)
+
+        # Return response
+        return JsonResponse({
+            'message': f'{len(containers)} containers added successfully.',
+            'errors': errors
+        }, status=201 if containers else 400)
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @api_view(['POST'])
 def submit_order_info(request):
     pprint(request.data)
-
     if request.method == 'POST':
         try:
             serializer = FormDataSerializer(data=request.data)
@@ -33,13 +97,7 @@ def submit_order_info(request):
 
 @api_view(['POST'])
 def compute(request):
-    NUM_OF_INDIVIDUALS = config_dict["NUM_OF_INDIVIDUALS"]
-    NUM_OF_GENERATIONS = config_dict["NUM_OF_GENERATIONS"]#00#50
-    PC = config_dict["PC"]
-    PM1 = config_dict["PM1"]
-    PM2 = config_dict["PM2"]
-    K = config_dict["K"]
-    ROTATIONS = config_dict["ROTATIONS"]
+    
     if request.method == 'POST':
         try:
             unfetched_records = FormData.objects.filter(order_fetched=False)#!ORDERS
@@ -47,9 +105,8 @@ def compute(request):
             if unfetched_records:
                 for record in unfetched_records:
                     record.order_fetched = True
-                    record.save() 
-                t = threading.Timer(1, main, args=(NUM_OF_INDIVIDUALS, NUM_OF_GENERATIONS,ROTATIONS,
-                                                    PC, PM1, PM2, K, unfetched_records))
+                    record.save()                 
+                t = threading.Timer(1, main, args=(unfetched_records,))
                 t.start() 
 
                 return JsonResponse({'message': 'Computation started successfully'})
@@ -124,21 +181,9 @@ def handle_ar_view(request):
         latest_result = sorted_results.first()
         # layouts= latest_result.get_layouts()
         if latest_result:
+            print(f"[X] laatesResult: {latest_result}")
             pass
-            # Check if latest_result exists
-            
-            # channel_layer = get_channel_layer()
-            # async_to_sync(channel_layer.group_send)(
-            #     "ar_group",  # Group name for ARConsumer
-            #     {
-            #         "type": "send_ga_results",
-            #         "ga_results": latest_result.get_result_json(),
-                    
-            #     }
-            # )
-            
-
-            return JsonResponse({},safe=False) 
+            return JsonResponse({"message":"Success"},safe=False) 
         #JsonResponse({"plot_data": plot_data, "ticks": ticks}, safe=False)#return JsonResponse(result_json, content_type='application/json', status=200, safe=False)
         else:
             # Return error response if no result is found

@@ -7,13 +7,46 @@ from ..CLP_GA import configurations as CONFIG
 from pprint import pprint
 
 
-
-def current_datetime(request):
+def default_message(request):
+    # Extract necessary information from the request
+    client_ip = get_client_ip(request)  # Helper function to get client IP
+    user_agent = request.META.get('HTTP_USER_AGENT', 'Unknown')
+    
+    # Fetch all containers from the database
     containers = Container.objects.all()
-    container_info = "<br>".join([f"Container {cont.cont_ID}ft: Opening = {cont.get_opening_type_display()}, Weight={cont.tare_weight}, Payload={cont.payload},External Length={cont.external_length}, External Width={cont.external_width}, External Height={cont.external_height}" for cont in containers])
-    html = f"<html><body>Containers:<br>{container_info}</body></html>"
+    
+    # Create container details as an HTML string
+    container_info = "<br>".join([
+        f"Container {cont.cont_ID}ft: Opening = {cont.get_opening_type_display()}, "
+        f"Weight = {cont.tare_weight} kg, Payload = {cont.payload} kg, "
+        f"External Length = {cont.external_length} m, "
+        f"External Width = {cont.external_width} m, "
+        f"External Height = {cont.external_height} m"
+        for cont in containers
+    ])
+    
+    # Add request details and container information to the HTML response
+    html = (
+        f"<html><body>"
+        f"<h2>Request Details</h2>"
+        f"<p>Client IP: {client_ip}</p>"
+        f"<p>User Agent: {user_agent}</p>"
+        f"<h2>Container Information</h2>"
+        f"<p>{container_info}</p>"
+        f"</body></html>"
+    )
     
     return HttpResponse(html)
+
+def get_client_ip(request):
+    """Helper function to get the client IP address."""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR', 'Unknown')
+    return ip
+
 
 def get_cont_ids(request):
     try:
@@ -24,15 +57,19 @@ def get_cont_ids(request):
         return JsonResponse({'error': 'Container not found'}, status=404)
 
 
-def get_container_info(request, container_id):
+def get_container_info(request, container_id=None):
 
     try:
-        cont = Container.objects.get(cont_ID=container_id)
+        if container_id:
+            cont = Container.objects.get(cont_ID=container_id)
 
-        return JsonResponse(cont.get_info())
+            return JsonResponse(cont.get_info())
+        else:
+            containers = Container.objects.all()
+            containers_info = [container.get_info() for container in containers]
+            return JsonResponse({'containers': containers_info})
     except Container.DoesNotExist:
         return JsonResponse({'error': 'Container not found'}, status=404)
- 
 def get_results(request):
     try:
         sorted_results = GAResult.objects.order_by('-file_name')

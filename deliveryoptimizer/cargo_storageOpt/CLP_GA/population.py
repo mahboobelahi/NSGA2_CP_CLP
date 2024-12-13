@@ -3,12 +3,12 @@ from copy import deepcopy
 from pprint import pprint
 from .helper import assign_rotation
 
-def generate_pop(box_params, count, ROTATIONS, custs):
+def generate_pop(box_params,pop_size, ROTATIONS, custs):
     population = {}
-    if count > 5:
-        x = 5
-    else:
-        x = count
+    # if count > 5:
+    #     x = 5
+    # else:
+    #     x = count
 
     for i in range(0, 6):
         if i == 4:
@@ -33,7 +33,7 @@ def generate_pop(box_params, count, ROTATIONS, custs):
                          }
 
     keys = list(box_params.keys())
-    for i in range(6, count):
+    for i in range(6,pop_size):
         random.shuffle(keys)
         population[i] = {"order": deepcopy(keys),
                          "rotate": [assign_rotation(box_params.get(r).s_rotate) for r in keys]}

@@ -20,5 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('storage/', include('cargo_storageOpt.urls')),
-    
+    path('',include('cargo_storageOpt.urls')),
 ]
